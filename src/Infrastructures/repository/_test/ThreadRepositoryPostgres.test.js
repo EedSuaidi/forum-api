@@ -2,13 +2,13 @@ import UsersTableTestHelper from "../../../../tests/UsersTableTestHelper.js";
 import pool from "../../database/postgres/pool.js";
 import ThreadRepositoryPostgres from "../ThreadRepositoryPostgres.js";
 
-describe("ThreadRepositoryPostgres comments and detail", () => {
+describe("ThreadRepositoryPostgres", () => {
   const fixtureId = Date.now().toString();
   const threadId = `thread-test-${fixtureId}`;
   const userId = `user-test-${fixtureId}`;
   const username = `threadtester${fixtureId}`;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     await UsersTableTestHelper.addUser({ id: userId, username });
     await pool.query({
       text: "INSERT INTO threads (id, title, body, owner) VALUES ($1, $2, $3, $4)",
@@ -16,11 +16,7 @@ describe("ThreadRepositoryPostgres comments and detail", () => {
     });
   });
 
-  afterEach(async () => {
-    await pool.query({
-      text: "DELETE FROM comments WHERE thread_id = $1",
-      values: [threadId],
-    });
+  afterAll(async () => {
     await pool.query({
       text: "DELETE FROM threads WHERE id = $1",
       values: [threadId],
@@ -29,23 +25,18 @@ describe("ThreadRepositoryPostgres comments and detail", () => {
       text: "DELETE FROM users WHERE id = $1",
       values: [userId],
     });
-  });
-
-  afterAll(async () => {
     await pool.end();
   });
 
-  it("should persist comment and return thread detail including deleted content", async () => {
+  it("should return thread detail without comments", async () => {
     const repository = new ThreadRepositoryPostgres(pool, () => "generated");
-    const addedComment = await repository.addComment(threadId, {
-      content: "comment",
-      owner: userId,
-    });
-    await repository.deleteComment(threadId, addedComment.id);
-    const detail = await repository.getThreadDetail(threadId);
 
-    expect(addedComment.content).toEqual("comment");
-    expect(detail.comments[0].content).toEqual("**komentar telah dihapus**");
+    await expect(repository.getThreadDetail(threadId)).resolves.toMatchObject({
+      id: threadId,
+      title: "title",
+      body: "body",
+      username,
+    });
   });
 
   it("should reject an unknown thread", async () => {

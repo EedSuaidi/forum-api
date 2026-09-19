@@ -1,11 +1,12 @@
 class DeleteCommentUseCase {
-  constructor({ threadRepository }) {
+  constructor({ threadRepository, commentRepository }) {
     this._threadRepository = threadRepository;
+    this._commentRepository = commentRepository;
   }
 
   async execute(threadId, commentId, owner) {
     await this._threadRepository.verifyThread(threadId);
-    const commentOwner = await this._threadRepository.getCommentOwner(
+    const commentOwner = await this._commentRepository.getCommentOwner(
       threadId,
       commentId,
     );
@@ -14,7 +15,7 @@ class DeleteCommentUseCase {
       throw new Error("DELETE_COMMENT.NOT_OWNER");
     }
 
-    await this._threadRepository.deleteComment(threadId, commentId);
+    await this._commentRepository.deleteComment(threadId, commentId);
   }
 }
 

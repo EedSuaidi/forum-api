@@ -1,6 +1,6 @@
 import UsersTableTestHelper from "../../../../tests/UsersTableTestHelper.js";
 import pool from "../../database/postgres/pool.js";
-import ThreadRepositoryPostgres from "../ThreadRepositoryPostgres.js";
+import ReplyRepositoryPostgres from "../ReplyRepositoryPostgres.js";
 
 describe("ThreadRepositoryPostgres replies", () => {
   const fixtureId = Date.now().toString();
@@ -42,7 +42,7 @@ describe("ThreadRepositoryPostgres replies", () => {
   });
 
   it("should persist and soft delete a reply in thread detail", async () => {
-    const repository = new ThreadRepositoryPostgres(pool, () => "generated");
+    const repository = new ReplyRepositoryPostgres(pool, () => "generated");
     const addedReply = await repository.addReply(commentId, {
       content: "reply",
       owner: userId,
@@ -51,17 +51,15 @@ describe("ThreadRepositoryPostgres replies", () => {
     expect(addedReply.content).toEqual("reply");
     await repository.deleteReply(commentId, addedReply.id);
 
-    const detail = await repository.getThreadDetail(threadId);
-    expect(detail.comments[0].replies[0].content).toEqual(
-      "**balasan telah dihapus**",
-    );
+    const replies = await repository.getReplies(commentId);
+    expect(replies[0].content).toEqual("**balasan telah dihapus**");
   });
 
-  it("should reject an unknown comment", async () => {
-    const repository = new ThreadRepositoryPostgres(pool, () => "generated");
+  it("should reject an unknown reply", async () => {
+    const repository = new ReplyRepositoryPostgres(pool, () => "generated");
 
     await expect(
-      repository.verifyComment(threadId, "unknown-comment"),
-    ).rejects.toThrowError("komentar tidak ditemukan");
+      repository.getReplyOwner(commentId, "unknown-reply"),
+    ).rejects.toThrowError("balasan tidak ditemukan");
   });
 });

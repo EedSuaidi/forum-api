@@ -1,20 +1,27 @@
 import express from "express";
 
-const createThreadsRouter = (handler) => {
+const createThreadsRouter = ({
+  threadsHandler,
+  commentsHandler,
+  repliesHandler,
+}) => {
   const router = express.Router();
 
-  router.post("/", handler.postThreadHandler);
-  router.post("/:threadId/comments", handler.postCommentHandler);
-  router.delete("/:threadId/comments/:commentId", handler.deleteCommentHandler);
+  router.post("/", threadsHandler.postThreadHandler);
+  router.post("/:threadId/comments", commentsHandler.postCommentHandler);
+  router.delete(
+    "/:threadId/comments/:commentId",
+    commentsHandler.deleteCommentHandler,
+  );
   router.post(
     "/:threadId/comments/:commentId/replies",
-    handler.postReplyHandler,
+    repliesHandler.postReplyHandler,
   );
   router.delete(
     "/:threadId/comments/:commentId/replies/:replyId",
-    handler.deleteReplyHandler,
+    repliesHandler.deleteReplyHandler,
   );
-  router.get("/:threadId", handler.getThreadDetailHandler);
+  router.get("/:threadId", threadsHandler.getThreadDetailHandler);
 
   return router;
 };

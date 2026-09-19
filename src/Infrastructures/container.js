@@ -25,6 +25,10 @@ import LogoutUserUseCase from "../Applications/use_case/LogoutUserUseCase.js";
 import RefreshAuthenticationUseCase from "../Applications/use_case/RefreshAuthenticationUseCase.js";
 import ThreadRepository from "../Domains/threads/ThreadRepository.js";
 import ThreadRepositoryPostgres from "./repository/ThreadRepositoryPostgres.js";
+import CommentRepository from "../Domains/comments/CommentRepository.js";
+import CommentRepositoryPostgres from "./repository/CommentRepositoryPostgres.js";
+import ReplyRepository from "../Domains/replies/ReplyRepository.js";
+import ReplyRepositoryPostgres from "./repository/ReplyRepositoryPostgres.js";
 import AddThreadUseCase from "../Applications/use_case/AddThreadUseCase.js";
 import AddCommentUseCase from "../Applications/use_case/AddCommentUseCase.js";
 import DeleteCommentUseCase from "../Applications/use_case/DeleteCommentUseCase.js";
@@ -87,6 +91,20 @@ container.register([
   {
     key: ThreadRepository.name,
     Class: ThreadRepositoryPostgres,
+    parameter: {
+      dependencies: [{ concrete: pool }, { concrete: nanoid }],
+    },
+  },
+  {
+    key: CommentRepository.name,
+    Class: CommentRepositoryPostgres,
+    parameter: {
+      dependencies: [{ concrete: pool }, { concrete: nanoid }],
+    },
+  },
+  {
+    key: ReplyRepository.name,
+    Class: ReplyRepositoryPostgres,
     parameter: {
       dependencies: [{ concrete: pool }, { concrete: nanoid }],
     },
@@ -184,6 +202,7 @@ container.register([
       injectType: "destructuring",
       dependencies: [
         { name: "threadRepository", internal: ThreadRepository.name },
+        { name: "commentRepository", internal: CommentRepository.name },
       ],
     },
   },
@@ -194,6 +213,7 @@ container.register([
       injectType: "destructuring",
       dependencies: [
         { name: "threadRepository", internal: ThreadRepository.name },
+        { name: "commentRepository", internal: CommentRepository.name },
       ],
     },
   },
@@ -204,6 +224,8 @@ container.register([
       injectType: "destructuring",
       dependencies: [
         { name: "threadRepository", internal: ThreadRepository.name },
+        { name: "commentRepository", internal: CommentRepository.name },
+        { name: "replyRepository", internal: ReplyRepository.name },
       ],
     },
   },
@@ -213,7 +235,8 @@ container.register([
     parameter: {
       injectType: "destructuring",
       dependencies: [
-        { name: "threadRepository", internal: ThreadRepository.name },
+        { name: "commentRepository", internal: CommentRepository.name },
+        { name: "replyRepository", internal: ReplyRepository.name },
       ],
     },
   },
@@ -223,7 +246,8 @@ container.register([
     parameter: {
       injectType: "destructuring",
       dependencies: [
-        { name: "threadRepository", internal: ThreadRepository.name },
+        { name: "commentRepository", internal: CommentRepository.name },
+        { name: "replyRepository", internal: ReplyRepository.name },
       ],
     },
   },
