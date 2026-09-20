@@ -1,6 +1,6 @@
 import AddReplyUseCase from "../../../../Applications/use_case/AddReplyUseCase.js";
 import DeleteReplyUseCase from "../../../../Applications/use_case/DeleteReplyUseCase.js";
-import getAuthenticatedUser from "./getAuthenticatedUser.js";
+import getAuthenticatedUser from "../threads/getAuthenticatedUser.js";
 
 class RepliesHandler {
   constructor(container) {

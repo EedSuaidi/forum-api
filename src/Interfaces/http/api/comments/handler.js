@@ -1,6 +1,6 @@
 import AddCommentUseCase from "../../../../Applications/use_case/AddCommentUseCase.js";
 import DeleteCommentUseCase from "../../../../Applications/use_case/DeleteCommentUseCase.js";
-import getAuthenticatedUser from "./getAuthenticatedUser.js";
+import getAuthenticatedUser from "../threads/getAuthenticatedUser.js";
 
 class CommentsHandler {
   constructor(container) {

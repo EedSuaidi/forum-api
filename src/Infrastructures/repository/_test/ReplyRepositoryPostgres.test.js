@@ -41,6 +41,21 @@ describe("ThreadRepositoryPostgres replies", () => {
     await pool.end();
   });
 
+  it("should add a reply to database", async () => {
+    const repository = new ReplyRepositoryPostgres(pool, () => "added");
+
+    const addedReply = await repository.addReply(commentId, {
+      content: "added reply",
+      owner: userId,
+    });
+
+    expect(addedReply).toEqual({
+      id: "reply-added",
+      content: "added reply",
+      owner: userId,
+    });
+  });
+
   it("should persist and soft delete a reply in thread detail", async () => {
     const repository = new ReplyRepositoryPostgres(pool, () => "generated");
     const addedReply = await repository.addReply(commentId, {
@@ -55,7 +70,7 @@ describe("ThreadRepositoryPostgres replies", () => {
     await repository.deleteReply(commentId, addedReply.id);
 
     const replies = await repository.getReplies(commentId);
-    expect(replies[0]).toEqual({
+    expect(replies.find(({ id }) => id === addedReply.id)).toEqual({
       id: addedReply.id,
       content: "reply",
       date: expect.any(Date),

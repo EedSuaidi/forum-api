@@ -2,7 +2,7 @@ import { vi } from "vitest";
 import AddCommentUseCase from "../../../../../Applications/use_case/AddCommentUseCase.js";
 import DeleteCommentUseCase from "../../../../../Applications/use_case/DeleteCommentUseCase.js";
 import AuthenticationTokenManager from "../../../../../Applications/security/AuthenticationTokenManager.js";
-import CommentsHandler from "../commentsHandler.js";
+import CommentsHandler from "../handler.js";
 
 const createResponse = () => ({
   status: vi.fn().mockReturnThis(),

@@ -44,13 +44,7 @@ class ReplyRepositoryPostgres extends ReplyRepository {
         ORDER BY r.date ASC`,
       values: [commentId],
     });
-    return result.rows.map((reply) => ({
-      id: reply.id,
-      content: reply.content,
-      date: reply.date,
-      username: reply.username,
-      is_delete: reply.is_delete,
-    }));
+    return result.rows;
   }
 }
 

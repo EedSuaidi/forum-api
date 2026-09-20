@@ -49,7 +49,7 @@ describe("ThreadRepositoryPostgres", () => {
     });
   });
 
-  it("should return thread detail without comments", async () => {
+  it("should get thread detail from database", async () => {
     const repository = new ThreadRepositoryPostgres(pool, () => "generated");
 
     await expect(repository.getThreadDetail(threadId)).resolves.toMatchObject({

@@ -32,6 +32,47 @@ describe("CommentRepositoryPostgres", () => {
     await pool.end();
   });
 
+  it("should add a comment to database", async () => {
+    const repository = new CommentRepositoryPostgres(pool, () => "added");
+
+    const addedComment = await repository.addComment(threadId, {
+      content: "added comment",
+      owner: userId,
+    });
+
+    expect(addedComment).toEqual({
+      id: "comment-added",
+      content: "added comment",
+      owner: userId,
+    });
+  });
+
+  it("should get comment owner from database", async () => {
+    const commentId = `comment-owner-${fixtureId}`;
+    await pool.query({
+      text: "INSERT INTO comments (id, thread_id, content, owner) VALUES ($1, $2, $3, $4)",
+      values: [commentId, threadId, "comment", userId],
+    });
+    const repository = new CommentRepositoryPostgres(pool, () => "generated");
+
+    await expect(repository.getCommentOwner(threadId, commentId)).resolves.toBe(
+      userId,
+    );
+  });
+
+  it("should verify an existing comment", async () => {
+    const commentId = `comment-verify-${fixtureId}`;
+    await pool.query({
+      text: "INSERT INTO comments (id, thread_id, content, owner) VALUES ($1, $2, $3, $4)",
+      values: [commentId, threadId, "comment", userId],
+    });
+    const repository = new CommentRepositoryPostgres(pool, () => "generated");
+
+    await expect(
+      repository.verifyComment(threadId, commentId),
+    ).resolves.toBeUndefined();
+  });
+
   it("should persist and soft delete a comment", async () => {
     const repository = new CommentRepositoryPostgres(pool, () => "generated");
     const addedComment = await repository.addComment(threadId, {
@@ -50,7 +91,7 @@ describe("CommentRepositoryPostgres", () => {
     const comments = await repository.getComments(threadId);
 
     expect(addedComment.content).toEqual("comment");
-    expect(comments[0]).toEqual({
+    expect(comments.find(({ id }) => id === addedComment.id)).toEqual({
       id: addedComment.id,
       username,
       date: expect.any(Date),

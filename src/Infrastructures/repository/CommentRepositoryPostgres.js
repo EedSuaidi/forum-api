@@ -54,13 +54,7 @@ class CommentRepositoryPostgres extends CommentRepository {
         ORDER BY c.date ASC`,
       values: [threadId],
     });
-    return result.rows.map((comment) => ({
-      id: comment.id,
-      username: comment.username,
-      date: comment.date,
-      content: comment.content,
-      is_delete: comment.is_delete,
-    }));
+    return result.rows;
   }
 }
 
