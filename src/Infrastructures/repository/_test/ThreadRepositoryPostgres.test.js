@@ -28,6 +28,27 @@ describe("ThreadRepositoryPostgres", () => {
     await pool.end();
   });
 
+  it("should persist and return a thread correctly", async () => {
+    const repository = new ThreadRepositoryPostgres(pool, () => "generated");
+
+    const addedThread = await repository.addThread({
+      title: "new title",
+      body: "new body",
+      owner: userId,
+    });
+
+    expect(addedThread).toEqual({
+      id: "thread-generated",
+      title: "new title",
+      owner: userId,
+    });
+
+    await pool.query({
+      text: "DELETE FROM threads WHERE id = $1",
+      values: [addedThread.id],
+    });
+  });
+
   it("should return thread detail without comments", async () => {
     const repository = new ThreadRepositoryPostgres(pool, () => "generated");
 
@@ -39,9 +60,18 @@ describe("ThreadRepositoryPostgres", () => {
     });
   });
 
+  it("should verify an existing thread", async () => {
+    const repository = new ThreadRepositoryPostgres(pool, () => "generated");
+
+    await expect(repository.verifyThread(threadId)).resolves.toBeUndefined();
+  });
+
   it("should reject an unknown thread", async () => {
     const repository = new ThreadRepositoryPostgres(pool, () => "generated");
 
+    await expect(
+      repository.getThreadDetail("unknown-thread"),
+    ).rejects.toThrowError("thread tidak ditemukan");
     await expect(
       repository.verifyThread("unknown-thread"),
     ).rejects.toThrowError("thread tidak ditemukan");

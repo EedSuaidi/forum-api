@@ -6,4 +6,7 @@ export default defineConfig({
     fileParallelism: false,
     setupFiles: ["dotenv/config"],
   },
+  coverage: {
+    exclude: ["src/Commons/config.js"],
+  },
 });

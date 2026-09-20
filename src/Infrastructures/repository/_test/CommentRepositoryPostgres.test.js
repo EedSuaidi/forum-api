@@ -39,16 +39,32 @@ describe("CommentRepositoryPostgres", () => {
       owner: userId,
     });
 
+    await expect(
+      repository.getCommentOwner(threadId, addedComment.id),
+    ).resolves.toBe(userId);
+    await expect(
+      repository.verifyComment(threadId, addedComment.id),
+    ).resolves.toBeUndefined();
+
     await repository.deleteComment(threadId, addedComment.id);
     const comments = await repository.getComments(threadId);
 
     expect(addedComment.content).toEqual("comment");
-    expect(comments[0].content).toEqual("**komentar telah dihapus**");
+    expect(comments[0]).toEqual({
+      id: addedComment.id,
+      username,
+      date: expect.any(Date),
+      content: "comment",
+      is_delete: true,
+    });
   });
 
   it("should reject an unknown comment", async () => {
     const repository = new CommentRepositoryPostgres(pool, () => "generated");
 
+    await expect(
+      repository.getCommentOwner(threadId, "unknown-comment"),
+    ).rejects.toThrowError("komentar tidak ditemukan");
     await expect(
       repository.verifyComment(threadId, "unknown-comment"),
     ).rejects.toThrowError("komentar tidak ditemukan");

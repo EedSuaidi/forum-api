@@ -49,10 +49,19 @@ describe("ThreadRepositoryPostgres replies", () => {
     });
 
     expect(addedReply.content).toEqual("reply");
+    await expect(
+      repository.getReplyOwner(commentId, addedReply.id),
+    ).resolves.toBe(userId);
     await repository.deleteReply(commentId, addedReply.id);
 
     const replies = await repository.getReplies(commentId);
-    expect(replies[0].content).toEqual("**balasan telah dihapus**");
+    expect(replies[0]).toEqual({
+      id: addedReply.id,
+      content: "reply",
+      date: expect.any(Date),
+      username,
+      is_delete: true,
+    });
   });
 
   it("should reject an unknown reply", async () => {

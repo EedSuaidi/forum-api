@@ -10,18 +10,22 @@ describe("AddThreadUseCase", () => {
       body: "sebuah body thread",
       owner: "user-123",
     };
-    const addedThread = {
+    const mockedAddedThread = {
       id: "thread-123",
       title: useCasePayload.title,
       owner: useCasePayload.owner,
     };
     const threadRepository = new ThreadRepository();
-    threadRepository.addThread = vi.fn().mockResolvedValue(addedThread);
+    threadRepository.addThread = vi.fn().mockResolvedValue(mockedAddedThread);
     const useCase = new AddThreadUseCase({ threadRepository });
 
     const result = await useCase.execute(useCasePayload);
 
-    expect(result).toEqual(addedThread);
+    expect(result).toEqual({
+      id: "thread-123",
+      title: useCasePayload.title,
+      owner: useCasePayload.owner,
+    });
     expect(threadRepository.addThread).toHaveBeenCalledWith(
       new NewThread(useCasePayload),
     );
