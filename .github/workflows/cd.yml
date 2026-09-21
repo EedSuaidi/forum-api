@@ -14,6 +14,15 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - name: Validate Vercel configuration
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          test -n "$VERCEL_TOKEN" || (echo "Missing GitHub secret: VERCEL_TOKEN" && exit 1)
+          test -n "$VERCEL_ORG_ID" || (echo "Missing GitHub secret: VERCEL_ORG_ID" && exit 1)
+          test -n "$VERCEL_PROJECT_ID" || (echo "Missing GitHub secret: VERCEL_PROJECT_ID" && exit 1)
       - name: Deploy application
         uses: amondnet/vercel-action@v25
         with:
@@ -21,3 +30,7 @@ jobs:
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           vercel-args: --prod
+      - name: Verify HTTPS deployment
+        run: |
+          test "$(curl --silent --show-error --location --write-out '%{http_code}' --output /tmp/hello-response.json https://forum-api-vert.vercel.app/hello)" = "200"
+          grep -q 'Hello World' /tmp/hello-response.json
