@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       scenario:
-        description: 'Test scenario to execute'
+        description: "Test scenario to execute"
         required: true
         type: choice
         options:
