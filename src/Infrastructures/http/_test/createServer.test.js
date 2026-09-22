@@ -39,6 +39,14 @@ describe("HTTP server", () => {
     });
   });
 
+  it("should expose Hello World as JSON", async () => {
+    const app = await createServer({});
+
+    const response = await request(app).get("/hello");
+
+    expect(response.headers["content-type"]).toMatch(/json/);
+  });
+
   describe("when POST /users", () => {
     it("should response 201 and persisted user", async () => {
       // Arrange
