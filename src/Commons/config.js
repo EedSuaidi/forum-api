@@ -22,6 +22,10 @@ const config = {
     user: process.env.PGUSER,
     password: process.env.PGPASSWORD,
     database: process.env.PGDATABASE,
+    ssl:
+      process.env.PGSSL === "true" || process.env.PGSSLMODE === "require"
+        ? { rejectUnauthorized: false }
+        : undefined,
   },
   auth: {
     jwtStrategy: "forumapi",
