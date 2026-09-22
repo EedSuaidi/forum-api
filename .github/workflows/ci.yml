@@ -3,11 +3,40 @@ name: Continuous Integration
 on:
   pull_request:
     branches: [main, master]
+  workflow_dispatch:
+    inputs:
+      scenario:
+        description: 'Test scenario to execute'
+        required: true
+        type: choice
+        options:
+          - success
+          - failure
+        default: success
 
 permissions:
   contents: read
 
 jobs:
+  ci-scenario:
+    name: CI Scenario Test
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    env:
+      CI_SCENARIO: ${{ inputs.scenario }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Run scenario test
+        run: npm test -- src/Commons/_test/ciScenario.test.js
+
   unit-test:
     name: Unit Test
     runs-on: ubuntu-latest
