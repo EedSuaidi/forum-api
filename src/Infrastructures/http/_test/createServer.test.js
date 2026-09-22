@@ -35,7 +35,7 @@ describe("HTTP server", () => {
     expect(response.status).toEqual(200);
     expect(response.body).toEqual({
       status: "success",
-      message: "Hello World",
+      message: "Hello World!",
     });
   });
 
