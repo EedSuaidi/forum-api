@@ -93,8 +93,10 @@ jobs:
       - name: Create test environment
         run: |
           printf "PGHOST=127.0.0.1\nPGPORT=5432\nPGUSER=postgres\nPGPASSWORD=postgres\nPGDATABASE=forumapi_test\n" > .test.env
+      - name: Check PostgreSQL service
+        run: pg_isready -h 127.0.0.1 -p 5432 -U postgres -d forumapi_test
       - name: Run database migrations
-        run: npm run migrate:test
+        run: npm run migrate:test -- --create-migrations-schema --verbose
       - name: Run integration tests
         run: npm test -- src/Infrastructures/repository/_test
 
@@ -138,7 +140,9 @@ jobs:
       - name: Create test environment
         run: |
           printf "PGHOST=127.0.0.1\nPGPORT=5432\nPGUSER=postgres\nPGPASSWORD=postgres\nPGDATABASE=forumapi_test\n" > .test.env
+      - name: Check PostgreSQL service
+        run: pg_isready -h 127.0.0.1 -p 5432 -U postgres -d forumapi_test
       - name: Run database migrations
-        run: npm run migrate:test
+        run: npm run migrate:test -- --create-migrations-schema --verbose
       - name: Run functional tests
         run: npm test -- src/Infrastructures/http/_test
